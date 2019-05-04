@@ -7,9 +7,6 @@
   (check-type nonce string)
   (format nil "n,,n=~a,r=~a" username nonce))
 
-(define-condition unexpected-nonce (error)
-  ((text :initarg :text :reader text)))
-
 (defun gen-client-final-message
     (&key password client-nonce client-initial-message server-response)
   "Takes a password, the initial client nonce, the initial client message & the server response.
