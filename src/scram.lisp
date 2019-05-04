@@ -80,8 +80,8 @@
           (cdr (assoc "r"
                       (parse-server-response :response response)
                       :test #'equal))))
-    (if (= 0 (search nonce server-nonce))
-        server-nonce)))
+    (when (= 0 (search nonce server-nonce))
+      server-nonce)))
 
 (defun parse-server-salt (&key response)
   "Gets the base64-decoded salt from the base64-decoded response string."
