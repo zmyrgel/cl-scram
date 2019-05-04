@@ -58,10 +58,8 @@
   (base64-encode (gen-client-initial-message :username username :nonce nonce)))
 
 (defun parse-server-response (&key response)
-  "Takes a non-encoded server response, & returns three values:
-   - The server nonce,
-   - The (base64-encoded) salt,
-   - The number of iterations."
+  "Takes a non-encoded server RESPONSE and returns three item list with:
+   - The server nonce, base64 encoded salt and the number of iterations."
   (check-type response string)
   (loop :for entry :in (split-sequence:split-sequence #\, response)
         :collect (let ((split-marker (position #\= entry)))
