@@ -30,11 +30,11 @@
       (setf (aref password i) (aref chars (secure-random:number (length chars)))))
     password))
 
-(defun gen-hmac-digest (&key key message)
+(defun gen-hmac-digest (key message &key (digest :sha1))
   "Takes a key & a message, and generates a HMAC digest."
   (ironclad:hmac-digest
    (ironclad:update-hmac
-    (ironclad:make-hmac key :sha1) message)))
+    (ironclad:make-hmac key digest) message)))
 
 (defun bit-vector->integer (bit-vector)
   "Create a positive integer from a bit-vector."
