@@ -7,6 +7,15 @@
   (check-type nonce string)
   (format nil "n,,n=~a,r=~a" username nonce))
 
+(defun generate-salted-password (password server-response &key (digest :sha1))
+  "Utility function to generate salted password from given PASSWORD string and SERVER-RESPONSE."
+  (ironclad:pbkdf2-hash-password
+   (ironclad:ascii-string-to-byte-array password)
+   :salt (ironclad:ascii-string-to-byte-array
+          (parse-server-salt :response server-response))
+   :digest digest
+   :iterations (parse-server-iterations :response server-response)))
+
 (defun gen-client-final-message
     (&key password client-nonce client-initial-message server-response)
   "Takes a password, the initial client nonce, the initial client message & the server response.
@@ -22,12 +31,7 @@
   (let* ((digest :sha1)
          (final-message-bare (format nil "c=biws,r=~a" (parse-server-nonce :nonce client-nonce
                                                                            :response server-response)))
-         (salted-password    (ironclad:pbkdf2-hash-password
-                              (ironclad:ascii-string-to-byte-array password)
-                              :salt       (ironclad:ascii-string-to-byte-array
-                                           (parse-server-salt :response server-response))
-                              :digest digest
-                              :iterations (parse-server-iterations :response server-response)))
+         (salted-password    (generate-salted-password password server-response :digest digest))
          (client-key         (gen-hmac-digest salted-password "Client Key" :digest digest))
          (stored-key         (ironclad:digest-sequence digest client-key))
          (auth-message       (format nil "~a,~a,~a"
