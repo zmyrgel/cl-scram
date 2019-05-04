@@ -14,27 +14,27 @@
 
 ; Function taken from cl-sasl library.
 (defun gen-sasl-password (password)
-  (check-type password string)
   "Get a normalized SASL password."
+  (check-type password string)
   (etypecase password
-    (string password)
-    (function
-      (funcall password))))
+    (string password
+     (function
+      (funcall password)))))
 
 (defun gen-client-nonce ()
   "Generate a random 32-character nonce."
-    (let ((chars "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
+  (let ((chars "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
         (length 32)
         (password (make-string 32)))
     (dotimes (i length)
       (setf (aref password i) (aref chars (secure-random:number (length chars)))))
-        password))
+    password))
 
 (defun gen-hmac-digest (&key key message)
   "Takes a key & a message, and generates a HMAC digest."
   (ironclad:hmac-digest
-    (ironclad:update-hmac
-      (ironclad:make-hmac key :sha1) message)))
+   (ironclad:update-hmac
+    (ironclad:make-hmac key :sha1) message)))
 
 (defun gen-sha1-digest (&key key)
   "Takes a key, and generates a SHA1 digest."
@@ -54,4 +54,4 @@
                       (integer->bit-list i (push r accum))))
                    ((null accum) (push 0 accum))
                    (t accum))))
-        (coerce (integer->bit-list integer) 'bit-vector)))
+    (coerce (integer->bit-list integer) 'bit-vector)))
