@@ -33,9 +33,9 @@
                                               :digest digest))
          (stored-key         (ironclad:digest-sequence digest client-key))
          (auth-message       (format nil "~a,~a,~a"
-                                     (if (= 0 (search "n,," client-initial-message))
-                                         (subseq client-initial-message 3
-                                                 (format nil "~a" client-initial-message)))
+                                     (when (zerop (search "n,," client-initial-message))
+                                       (subseq client-initial-message 3
+                                               (format nil "~a" client-initial-message)))
                                      server-response
                                      final-message-bare))
          (client-signature   (gen-hmac-digest stored-key
