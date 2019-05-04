@@ -36,10 +36,6 @@
    (ironclad:update-hmac
     (ironclad:make-hmac key :sha1) message)))
 
-(defun gen-sha1-digest (&key key)
-  "Takes a key, and generates a SHA1 digest."
-  (ironclad:digest-sequence :sha1 key))
-
 (defun bit-vector->integer (bit-vector)
   "Create a positive integer from a bit-vector."
   (reduce #'(lambda (first-bit second-bit)

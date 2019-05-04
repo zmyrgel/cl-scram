@@ -27,7 +27,7 @@
                               :iterations (parse-server-iterations :response server-response)))
          (client-key         (gen-hmac-digest :key salted-password
                                               :message (ironclad:ascii-string-to-byte-array "Client Key")))
-         (stored-key         (gen-sha1-digest :key client-key))
+         (stored-key         (ironclad:digest-sequence :sha1 client-key))
          (auth-message       (format nil "~a,~a,~a"
                                      (if (= 0 (search "n,," client-initial-message))
                                          (subseq client-initial-message 3
