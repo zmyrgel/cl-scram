@@ -75,7 +75,7 @@
           (cdr (assoc "r"
                       (parse-server-response :response response)
                       :test #'equal))))
-    (when (= 0 (search nonce server-nonce))
+    (when (zerop (search nonce server-nonce))
       server-nonce)))
 
 (defun parse-server-salt (&key response)
