@@ -10,13 +10,13 @@
     :version     "0.1"
     :license     "Revised BSD License (see LICENSE)"
     :description "Common lisp library to implement SCRAM-SHA1 SASL mechanism."
-    :depends-on  (:cl-sasl
-                  :cl-base64
-                  :ironclad
-                  :secure-random
-                  :split-sequence)
+    :depends-on  ("cl-sasl"
+                  "cl-base64"
+                  "ironclad"
+                  "secure-random"
+                  "split-sequence")
     :components  ((:module "src"
-                           :serial T
+                           :serial t
                            :components ((:file "packages")
                                         (:file "conditions")
                                         (:file "utils")
