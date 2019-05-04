@@ -34,10 +34,10 @@
     password))
 
 (defun gen-hmac-digest (key message &key (digest :sha1))
-  "Takes a key & a message, and generates a HMAC digest."
+  "Takes KEY and MESSAGE strings and generates a HMAC digest out of them."
   (ironclad:hmac-digest
-   (ironclad:update-hmac
-    (ironclad:make-hmac key digest) message)))
+   (ironclad:update-hmac (ironclad:make-hmac key digest)
+                         (ironclad:ascii-string-to-byte-array message))))
 
 (defun bit-vector->integer (bit-vector)
   "Create a positive integer from a bit-vector."

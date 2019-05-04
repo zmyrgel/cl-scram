@@ -28,9 +28,7 @@
                                            (parse-server-salt :response server-response))
                               :digest digest
                               :iterations (parse-server-iterations :response server-response)))
-         (client-key         (gen-hmac-digest salted-password
-                                              (ironclad:ascii-string-to-byte-array "Client Key")
-                                              :digest digest))
+         (client-key         (gen-hmac-digest salted-password "Client Key" :digest digest))
          (stored-key         (ironclad:digest-sequence digest client-key))
          (auth-message       (format nil "~a,~a,~a"
                                      (when (zerop (search "n,," client-initial-message))
@@ -38,18 +36,12 @@
                                                (format nil "~a" client-initial-message)))
                                      server-response
                                      final-message-bare))
-         (client-signature   (gen-hmac-digest stored-key
-                                              (ironclad:ascii-string-to-byte-array auth-message)
-                                              :digest digest))
+         (client-signature   (gen-hmac-digest stored-key auth-message :digest digest))
          (client-proof       (ironclad:integer-to-octets
                               (logxor (ironclad:octets-to-integer client-key)
                                       (ironclad:octets-to-integer client-signature))))
-         (server-key         (gen-hmac-digest salted-password
-                                              (ironclad:ascii-string-to-byte-array "Server Key")
-                                              :digest digest))
-         (server-signature   (gen-hmac-digest server-key
-                                              (ironclad:ascii-string-to-byte-array auth-message)
-                                              :digest digest))
+         (server-key         (gen-hmac-digest salted-password "Server Key" :digest digest))
+         (server-signature   (gen-hmac-digest server-key auth-message :digest digest))
          (final-message      (format nil "~a,p=~a"
                                      final-message-bare
                                      (base64-encode-octets client-proof))))
