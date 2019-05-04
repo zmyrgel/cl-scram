@@ -2,13 +2,16 @@
 (in-package #:cl-scram)
 
 (defun base64-encode (string)
+  "Returns Base64 encoded version of given STRING."
   (check-type string string)
   (cl-base64:string-to-base64-string string))
 
 (defun base64-encode-octets (octets)
+  "Returns given OCTETS as Base64 encoded string."
   (cl-base64:usb8-array-to-base64-string octets))
 
 (defun base64-decode (string)
+  "Decodes given STRING with Base64 algorithm and returns results as string."
   (check-type string string)
   (cl-base64:base64-string-to-string string))
 
