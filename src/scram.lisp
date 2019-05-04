@@ -15,8 +15,8 @@
   (check-type client-initial-message string)
   (check-type server-response string)
   (check-type password string)
-  (if (eq nil (parse-server-nonce :nonce client-nonce :response server-response))
-      (error 'unexpected-nonce :text "The server nonce does not begin with the client nonce."))
+  (when (null (parse-server-nonce :nonce client-nonce :response server-response))
+    (error 'unexpected-nonce :text "The server nonce does not begin with the client nonce."))
   (let* ((final-message-bare (format nil "c=biws,r=~a" (parse-server-nonce :nonce client-nonce
                                                                            :response server-response)))
          (salted-password    (ironclad:pbkdf2-hash-password
