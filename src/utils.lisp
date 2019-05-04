@@ -19,10 +19,7 @@
 (defun gen-sasl-password (password)
   "Get a normalized SASL password."
   (check-type password string)
-  (etypecase password
-    (string password
-     (function
-      (funcall password)))))
+  password)
 
 (defun gen-client-nonce ()
   "Generate a random 32-character nonce."
