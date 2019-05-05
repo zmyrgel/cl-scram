@@ -84,7 +84,7 @@
                        :test #'equal)))
          (found (search nonce server-nonce)))
     (if (or (null found) (/= found 0))
-        (error 'unexpected-nonce "Server nonce doesn't start with client nonce")
+        (error 'unexpected-nonce :text "The server nonce does not begin with the client nonce.")
         server-nonce)))
 
 (defun parse-server-salt (&key response)
