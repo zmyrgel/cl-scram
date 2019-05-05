@@ -78,12 +78,14 @@
    Validates that the server nonce starts with the client nonce."
   (check-type response string)
   (check-type nonce string)
-  (let ((server-nonce
-          (cdr (assoc "r"
-                      (parse-server-response :response response)
-                      :test #'equal))))
-    (when (zerop (search nonce server-nonce))
-      server-nonce)))
+  (let* ((server-nonce
+           (cdr (assoc "r"
+                       (parse-server-response :response response)
+                       :test #'equal)))
+         (found (search nonce server-nonce)))
+    (if (or (null found) (/= found 0))
+        (error 'unexpected-nonce "Server nonce doesn't start with client nonce")
+        server-nonce)))
 
 (defun parse-server-salt (&key response)
   "Gets the base64-decoded salt from the base64-decoded response string."
