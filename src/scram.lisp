@@ -1,13 +1,17 @@
 ;;;; SCRAM functions.
 (in-package #:cl-scram)
 
+(defvar *default-digest* :sha1
+  "Defines the default digest algorithm to use for SCRAM functions.
+   Currently it should be either :sha1 or :sha2")
+
 (defun gen-client-initial-message (&key username nonce)
   "Generate the SCRAM-SHA1 initial SASL message."
   (check-type username string)
   (check-type nonce string)
   (format nil "n,,n=~a,r=~a" username nonce))
 
-(defun generate-salted-password (password server-response &key (digest :sha1))
+(defun generate-salted-password (password server-response &key (digest *default-digest*))
   "Utility function to generate salted password from given PASSWORD string and SERVER-RESPONSE."
   (ironclad:pbkdf2-hash-password
    (ironclad:ascii-string-to-byte-array password)
@@ -28,7 +32,7 @@
   (when (null (parse-server-nonce :nonce client-nonce :response server-response))
     (error 'unexpected-nonce :text "The server nonce does not begin with the client nonce."))
 
-  (let* ((digest :sha1)
+  (let* ((digest *default-digest*)
          (final-message-bare (format nil "c=biws,r=~a" (parse-server-nonce :nonce client-nonce
                                                                            :response server-response)))
          (salted-password    (generate-salted-password password server-response :digest digest))
