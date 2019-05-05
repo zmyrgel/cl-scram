@@ -28,20 +28,16 @@
   (check-type client-initial-message string)
   (check-type server-response string)
   (check-type password string)
-
-  (when (null (parse-server-nonce :nonce client-nonce :response server-response))
-    (error 'unexpected-nonce :text "The server nonce does not begin with the client nonce."))
-
-  (let* ((digest *default-digest*)
-         (final-message-bare (format nil "c=biws,r=~a" (parse-server-nonce :nonce client-nonce
-                                                                           :response server-response)))
+  (let* ((digest             *default-digest*)
+         (server-nonce       (parse-server-nonce :nonce client-nonce :response server-response))
+         (final-message-bare (format nil "c=biws,r=~a" server-nonce))
          (salted-password    (generate-salted-password password server-response :digest digest))
          (client-key         (gen-hmac-digest salted-password "Client Key" :digest digest))
          (stored-key         (ironclad:digest-sequence digest client-key))
          (auth-message       (format nil "~a,~a,~a"
-                                     (when (zerop (search "n,," client-initial-message))
-                                       (subseq client-initial-message 3
-                                               (format nil "~a" client-initial-message)))
+                                     (if (= 0 (search "n,," client-initial-message))
+                                         (subseq client-initial-message 3)
+                                         client-initial-message)
                                      server-response
                                      final-message-bare))
          (client-signature   (gen-hmac-digest stored-key auth-message :digest digest))
