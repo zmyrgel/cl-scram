@@ -1,8 +1,8 @@
 (in-package :cl-user)
-(defpackage cl-scram.t.scram
+(defpackage cl-scram.tests
   (:use :cl :rove
         :cl-scram))
-(in-package :cl-scram.t.scram)
+(in-package :cl-scram.tests)
 
 (deftest base64-api-tests
     (testing "Verifying that public API functions work"
