@@ -20,6 +20,17 @@
    :digest digest
    :iterations (parse-server-iterations :response server-response)))
 
+(defun generate-auth-message (initial-message server-response final-message-bare)
+  "Utility function to generate auth-message from given "
+  (format nil "~a,~a,~a"
+          (let ((found (search "n,," client-initial-message)))
+            (if (or (null found)
+                    (not (zerop found)))
+                client-initial-message
+                (subseq client-initial-message 3)))
+          server-response
+          final-message-bare))
+
 (defun gen-client-final-message
     (&key password client-nonce client-initial-message server-response)
   "Takes a password, the initial client nonce, the initial client message & the server response.
@@ -34,12 +45,9 @@
          (salted-password    (generate-salted-password password server-response :digest digest))
          (client-key         (gen-hmac-digest salted-password "Client Key" :digest digest))
          (stored-key         (ironclad:digest-sequence digest client-key))
-         (auth-message       (format nil "~a,~a,~a"
-                                     (if (= 0 (search "n,," client-initial-message))
-                                         (subseq client-initial-message 3)
-                                         client-initial-message)
-                                     server-response
-                                     final-message-bare))
+         (auth-message       (generate-auth-message client-initial-message
+                                                    server-response
+                                                    final-message-bare))
          (client-signature   (gen-hmac-digest stored-key auth-message :digest digest))
          (client-proof       (ironclad:integer-to-octets
                               (logxor (ironclad:octets-to-integer client-key)
