@@ -20,9 +20,15 @@
 (deftest client-api-tests
     (testing "Client API functions"
              (ok (= (length (gen-client-nonce)) 32))
+             (ng (string= (gen-client-nonce)
+                          (gen-client-nonce)))
              (ok (string= (gen-client-encoded-initial-message :username "foo"
                                                               :nonce "bar")
                           "biwsbj1mb28scj1iYXI="))
+             (ok (signals (gen-client-encoded-initial-message :username "foo")
+                          'type-error))
+             (ok (signals (gen-client-encoded-initial-message :nonce "foo")
+                          'type-error))
              (ok (string= (gen-client-initial-message :username "foo"
                                                       :nonce "bar")
                           "n,,n=foo,r=bar"))
@@ -35,14 +41,14 @@
              ))
 
 (deftest parsing-tests
-  (testing "Server parsing function tests"
+  (testing "Server parsing tests"
     (let ((resp "r=fyko+d2lbbFgONRv9qkxdawL3rfcNHYJY1ZVvWVs7j,s=QSXCR+Q6sek8bf92,i=4096"))
       (ok (tree-equal (parse-server-nonce :response resp)
                       '(("r" . "fyko+d2lbbFgONRv9qkxdawL3rfcNHYJY1ZVvWVs7j")
                         ("s" . "QSXCR+Q6sek8bf92")
                         ("i" . "4096"))
-                      :test 'equalp)))
-             (ok (string= (parse-server-salt :response resp)
-                          "A%ÂGä:±é<mÿv"))
-             (ok (= (parse-server-iterations :response resp)
-                    4096))))
+                      :test 'equalp))
+      (ok (string= (parse-server-salt :response resp)
+                   "A%ÂGä:±é<mÿv"))
+      (ok (= (parse-server-iterations :response resp)
+             4096)))))
