@@ -20,14 +20,12 @@
    :digest digest
    :iterations (parse-server-iterations :response server-response)))
 
-(defun generate-auth-message (initial-message server-response final-message-bare)
-  "Utility function to generate auth-message from given "
+(defun generate-auth-message (client-initial-message server-response final-message-bare)
+  "Utility function to generate auth-message from given CLIENT-INTIAL-MESSAGE, SERVER-RESPONSE and FINAL-MESSAGE-BARE."
   (format nil "~a,~a,~a"
-          (let ((found (search "n,," client-initial-message)))
-            (if (or (null found)
-                    (not (zerop found)))
-                client-initial-message
-                (subseq client-initial-message 3)))
+          (if (string= "n,," (subseq client-initial-message 0 3))
+              (subseq client-initial-message 3)
+              client-initial-message)
           server-response
           final-message-bare))
 
