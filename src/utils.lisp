@@ -30,8 +30,9 @@
       (setf (aref password i) (aref chars (secure-random:number (length chars)))))
     password))
 
-(defun gen-hmac-digest (key message &key (digest :sha1))
-  "Takes KEY and MESSAGE strings and generates a HMAC digest out of them."
+(defun gen-hmac-digest (key message &key (digest *default-digest*))
+  "Takes KEY and MESSAGE strings and generates a HMAC digest out of them.
+   Optionally takes the DIGEST algorithm to use."
   (ironclad:hmac-digest
    (ironclad:update-hmac (ironclad:make-hmac key digest)
                          (ironclad:ascii-string-to-byte-array message))))
